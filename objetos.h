@@ -6,6 +6,9 @@
 #include <GL/gl.h>
 #include "vertex.h"
 #include <stdlib.h>
+#include <random>
+#include <cmath>
+#include <ctime>
 
 using namespace std;
 
@@ -38,9 +41,14 @@ void 	draw_aristas(float r, float g, float b, int grosor);
 void    draw_solido(float r, float g, float b);
 void 	draw_solido_ajedrez(float r1, float g1, float b1, float r2, float g2, float b2);
 
+// Modificación
+void    draw_caras_colores_distintos();
+void    inicializar_colores();
+
 void    cara_en(unsigned pos, int x, int y, int z);
 
 vector<_vertex3i> caras;
+vector<_vertex3f> color;
 };
 
 
@@ -53,6 +61,8 @@ class _cubo: public _triangulos3D
 public:
 
 	_cubo(float tam=0.5);
+    // Modificación
+    _cubo(float tam, int desp_x, int desp_y, int desp_z);
 };
 
 

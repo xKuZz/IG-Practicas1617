@@ -32,7 +32,7 @@ int UI_window_pos_x=50,UI_window_pos_y=50,UI_window_width=500,UI_window_height=5
 
 
 _piramide piramide_1(4,10);
-_cubo cubo_1(3);
+_cubo cubo_1(2,4,1,4);
 //**************************************************************************
 //
 //***************************************************************************
@@ -114,11 +114,15 @@ void draw_objects()
 //	}
 //glEnd();
 
-//cubo_1.draw_aristas(1.0,0.5,0.0,2);
-piramide_1.draw_solido_ajedrez(1.0,0.5,0.0,1.0,1.0,0.0);
 
-  //cubo_1.draw_solido(1.0,1.0,0.0);
+cubo_1.draw_caras_colores_distintos();
+piramide_1.draw_caras_colores_distintos();
+//cubo_1.draw_aristas(1.0,0.5,0.0,2);
+//piramide_1.draw_solido_ajedrez(1.0,0.5,0.0,1.0,1.0,0.0);
+
+//cubo_1.draw_solido(1.0,1.0,0.0);
 //cubo_1.draw_puntos(1.0,1.0,0.0,10);
+//cubo_1.draw_solido_ajedrez(1.0,0.5,0.0,1.0,1.0,0.0);
 }
 
 
@@ -237,6 +241,7 @@ int main(int argc, char **argv)
 
 // se llama a la inicialización de glut
 glutInit(&argc, argv);
+srand(time(NULL));
 
 // se indica las caracteristicas que se desean para la visualización con OpenGL
 // Las posibilidades son:
