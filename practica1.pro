@@ -6,6 +6,6 @@ SOURCES = \
 
 LIBS += -lglut
 
-CONFIG += console
+CONFIG += console c++11
 QT += opengl
 

@@ -31,7 +31,6 @@ GLfloat Window_width,Window_height,Front_plane,Back_plane;
 int UI_window_pos_x=50,UI_window_pos_y=50,UI_window_width=500,UI_window_height=500;
 
 
-_piramide piramide_1(4,10);
 _cubo cubo_1(2,4,1,4);
 //**************************************************************************
 //
@@ -116,7 +115,6 @@ void draw_objects()
 
 
 cubo_1.draw_caras_colores_distintos();
-piramide_1.draw_caras_colores_distintos();
 //cubo_1.draw_aristas(1.0,0.5,0.0,2);
 //piramide_1.draw_solido_ajedrez(1.0,0.5,0.0,1.0,1.0,0.0);
 
