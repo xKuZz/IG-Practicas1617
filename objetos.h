@@ -9,6 +9,7 @@
 #include <random>
 #include <cmath>
 #include <ctime>
+#include "file_ply_stl.h"
 
 using namespace std;
 
@@ -77,6 +78,30 @@ public:
 	_piramide(float tam=0.5, float al=0.75);
 };
 
+//*************************************************************************
+// clase para objetos ply
+//*************************************************************************
+
+class _objeto_ply: public _triangulos3D {
+public:
+    _objeto_ply();
+
+int parametros(char* archivo);
+};
+
+//*************************************************************************
+// clase para objetos por revolución
+//*************************************************************************
+
+class _rotacion: public _triangulos3D {
+public:
+    _rotacion();
+    void parametros(vector<_vertex3f> perfil1, int num1);
+
+vector<_vertex3f> perfil;
+int num;
+
+};
 
 
 

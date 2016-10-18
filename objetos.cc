@@ -85,6 +85,30 @@ void _triangulos3D::draw_solido_ajedrez(float r1, float g1, float b1, float r2, 
 
 void _triangulos3D::draw_caras_colores_distintos()
 {
+
+    if (color.empty()) {
+        color.resize(caras.size());
+
+        for (unsigned i= 0; i < color.size(); ++i) {
+          bool repetido = true;
+
+          while (repetido) {
+            repetido = false;
+            float color1 = (float) rand() / (float) RAND_MAX;
+            float color2 = (float) rand() / (float) RAND_MAX;
+            float color3 = (float) rand() / (float) RAND_MAX;
+
+            color[i].x  = color1;
+            color[i].y  = color2;
+            color[i].z  = color3;
+
+            for (unsigned j = 0; j < i && !repetido; ++j)
+                if (color[i] == color[j])
+                    repetido = true;
+          }
+        }
+
+    }
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glBegin(GL_TRIANGLES);
 
@@ -251,3 +275,72 @@ _cubo::_cubo(float tam, int desp_x, int desp_y, int desp_z)
 
 
 }
+
+_objeto_ply::_objeto_ply()
+{
+
+}
+
+int _objeto_ply::parametros(char *archivo)
+{
+    _file_ply p;
+    vector<float> ver_ply;
+    vector<int>   car_ply;
+    _vertex3i     car_aux;
+    _vertex3f     ver_aux;
+    p.open(archivo);
+    p.read(ver_ply, car_ply);
+
+    int n_ver = ver_ply.size()/3;
+    int n_car = car_ply.size()/3;
+    vertices.resize(n_ver);
+    caras.resize(n_car);
+
+
+    for (int i = 0; i < n_ver; ++i) {
+        ver_aux.x=ver_ply[i*3];
+        ver_aux.y=ver_ply[i*3+1];
+        ver_aux.z=ver_ply[i*3+2];
+        vertices[i]=ver_aux;
+    }
+    for (int i = 0; i < n_car; ++i) {
+        car_aux.x=car_ply[i*3];
+        car_aux.y=car_ply[i*3+1];
+        car_aux.z=car_ply[i*3+2];
+        caras[i]=car_aux;
+    }
+    p.close();
+
+
+    return 0;
+}
+_rotacion::_rotacion()
+{
+
+}
+
+void _rotacion::parametros(vector<_vertex3f> perfil1, int num1)
+{
+   _vertex3f vertice_aux;
+   _vertex3i cara_aux;
+
+   // tratamiento de los vértices
+   int num_aux = perfil1.size();
+   vertices.resize(num_aux*num);
+   for (int j = 0; j < num; ++j)
+       for (int i = 0; i < num_aux; ++i) {
+           vertice_aux.x=perfil[i].x*cos(2.0*M_PI*j/(1.0*num))+
+                         perfil[i].z*sin(2.0*M_PI*j/(1.0*num));
+           vertice_aux.z=perfil[i].x*sin(2.0*M_PI*j/(1.0*num))+
+                         perfil[i].z*cos(2.0*M_PI*j/(1.0*num));
+           vertice_aux.y=perfil[i].y;
+           vertices[i+j*num_aux]=vertice_aux;
+       }
+}
+
+// tratamiento de las caras
+
+
+// tapa inferior
+
+// tapa superior

@@ -49,9 +49,11 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = practica1.cc \
-		objetos.cc 
+		objetos.cc \
+		file_ply_stl.cc 
 OBJECTS       = practica1.o \
-		objetos.o
+		objetos.o \
+		file_ply_stl.o
 DIST          = ../Qt/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		../Qt/5.7/gcc_64/mkspecs/common/unix.conf \
 		../Qt/5.7/gcc_64/mkspecs/common/linux.conf \
@@ -183,6 +185,7 @@ DIST          = ../Qt/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		../Qt/5.7/gcc_64/mkspecs/features/qt_config.prf \
 		../Qt/5.7/gcc_64/mkspecs/linux-g++/qmake.conf \
 		../Qt/5.7/gcc_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		../Qt/5.7/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../Qt/5.7/gcc_64/mkspecs/features/default_pre.prf \
 		../Qt/5.7/gcc_64/mkspecs/features/resolve_config.prf \
@@ -201,8 +204,10 @@ DIST          = ../Qt/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		../Qt/5.7/gcc_64/mkspecs/features/yacc.prf \
 		../Qt/5.7/gcc_64/mkspecs/features/lex.prf \
 		practica1.pro objetos.h \
-		vertex.h practica1.cc \
-		objetos.cc
+		vertex.h \
+		file_ply_stl.h practica1.cc \
+		objetos.cc \
+		file_ply_stl.cc
 QMAKE_TARGET  = practica1
 DESTDIR       = 
 TARGET        = practica1
@@ -345,6 +350,7 @@ Makefile: practica1.pro ../Qt/5.7/gcc_64/mkspecs/linux-g++/qmake.conf ../Qt/5.7/
 		../Qt/5.7/gcc_64/mkspecs/features/qt_config.prf \
 		../Qt/5.7/gcc_64/mkspecs/linux-g++/qmake.conf \
 		../Qt/5.7/gcc_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		../Qt/5.7/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../Qt/5.7/gcc_64/mkspecs/features/default_pre.prf \
 		../Qt/5.7/gcc_64/mkspecs/features/resolve_config.prf \
@@ -499,6 +505,7 @@ Makefile: practica1.pro ../Qt/5.7/gcc_64/mkspecs/linux-g++/qmake.conf ../Qt/5.7/
 ../Qt/5.7/gcc_64/mkspecs/features/qt_config.prf:
 ../Qt/5.7/gcc_64/mkspecs/linux-g++/qmake.conf:
 ../Qt/5.7/gcc_64/mkspecs/features/spec_post.prf:
+.qmake.stash:
 ../Qt/5.7/gcc_64/mkspecs/features/exclusive_builds.prf:
 ../Qt/5.7/gcc_64/mkspecs/features/default_pre.prf:
 ../Qt/5.7/gcc_64/mkspecs/features/resolve_config.prf:
@@ -535,8 +542,8 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents objetos.h vertex.h $(DISTDIR)/
-	$(COPY_FILE) --parents practica1.cc objetos.cc $(DISTDIR)/
+	$(COPY_FILE) --parents objetos.h vertex.h file_ply_stl.h $(DISTDIR)/
+	$(COPY_FILE) --parents practica1.cc objetos.cc file_ply_stl.cc $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -579,12 +586,17 @@ compiler_clean:
 ####### Compile
 
 practica1.o: practica1.cc objetos.h \
-		vertex.h
+		vertex.h \
+		file_ply_stl.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o practica1.o practica1.cc
 
 objetos.o: objetos.cc objetos.h \
-		vertex.h
+		vertex.h \
+		file_ply_stl.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o objetos.o objetos.cc
+
+file_ply_stl.o: file_ply_stl.cc file_ply_stl.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o file_ply_stl.o file_ply_stl.cc
 
 ####### Install
 

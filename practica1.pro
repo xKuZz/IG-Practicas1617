@@ -1,8 +1,9 @@
-HEADERS = objetos.h vertex.h
+HEADERS = objetos.h vertex.h file_ply_stl.h
 
 SOURCES = \
     practica1.cc \
-    objetos.cc
+    objetos.cc \
+    file_ply_stl.cc
 
 LIBS += -lglut
 
