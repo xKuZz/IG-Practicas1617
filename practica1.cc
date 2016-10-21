@@ -31,9 +31,21 @@ GLfloat Window_width,Window_height,Front_plane,Back_plane;
 int UI_window_pos_x=50,UI_window_pos_y=50,UI_window_width=500,UI_window_height=500;
 
 
+vector<_vertex3f> perfil { {1.0, -1.4, 0.0},
+                           {1.0, -1.1, 0.0},
+                           {0.5, -0.7, 0.0},
+                           {0.4, -0.4, 0.0},
+                           {0.4, -0.5, 0.0},
+                           {0.5,  0.6, 0.0},
+                           {0.55, 1.0, 0.0},
+                           {0.5,  1.2, 0.0},
+                           {0.3,  1.4, 0.0}
+                         };
+
 _cubo cubo_1(2,4,1,4);
 _piramide piramide(0.85,0.7);
 _objeto_ply ply;
+_rotacion rota;
 //**************************************************************************
 //
 //***************************************************************************
@@ -104,18 +116,10 @@ glEnd();
 
 void draw_objects()
 {
-//GLfloat Vertices[8][3]= {{5,0,0},{4,4,0},{0,5,0},{-4,4,0},{-5,0,0},{-4,-4,0},{0,-5,0},{4,-4,0}};
-
-//glColor3f(0,1,0);
-//glPointSize(4);
-
-//glBegin(GL_POINTS);
-//for (int i=0;i<8;i++){
-//	glVertex3fv((GLfloat *) &Vertices[i]);
-//	}
-//glEnd();
-
-ply.draw_caras_colores_distintos();
+rota.parametros(perfil, 12);
+rota.draw_solido(0.0,1.0,0.0);
+//rota.draw_aristas(0.0,0.0,0.0,1);
+//ply.draw_caras_colores_distintos();
 //cubo_1.draw_caras_colores_distintos();
 //cubo_1.draw_aristas(1.0,0.5,0.0,2);
 //piramide_1.draw_solido_ajedrez(1.0,0.5,0.0,1.0,1.0,0.0);

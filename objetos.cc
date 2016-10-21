@@ -319,10 +319,11 @@ _rotacion::_rotacion()
 
 }
 
-void _rotacion::parametros(vector<_vertex3f> perfil1, int num1)
+void _rotacion::parametros(const vector<_vertex3f>& perfil1, int num1)
 {
+    perfil = perfil1;
+    num = num1;
    _vertex3f vertice_aux;
-   _vertex3i cara_aux;
 
    // tratamiento de los vértices
    int num_aux = perfil1.size();
@@ -331,16 +332,64 @@ void _rotacion::parametros(vector<_vertex3f> perfil1, int num1)
        for (int i = 0; i < num_aux; ++i) {
            vertice_aux.x=perfil[i].x*cos(2.0*M_PI*j/(1.0*num))+
                          perfil[i].z*sin(2.0*M_PI*j/(1.0*num));
-           vertice_aux.z=perfil[i].x*sin(2.0*M_PI*j/(1.0*num))+
-                         perfil[i].z*cos(2.0*M_PI*j/(1.0*num));
            vertice_aux.y=perfil[i].y;
+           vertice_aux.z=-perfil[i].x*sin(2.0*M_PI*j/(1.0*num))+
+                         perfil[i].z*cos(2.0*M_PI*j/(1.0*num));
+
+
            vertices[i+j*num_aux]=vertice_aux;
        }
-}
+
 
 // tratamiento de las caras
+    for (int n_perfil = 0; n_perfil < num -1; ++n_perfil)
+        for (int n_vertice = 1; n_vertice < num_aux; ++n_vertice) {
+            int   actual       = n_perfil*num_aux + n_vertice;
+            int anterior       = actual - 1;
+            int sig_perfil     = actual + num_aux;
+            int ant_sig_perfil = anterior + num_aux;
+            caras.emplace_back(actual, anterior, ant_sig_perfil);
+            caras.emplace_back(actual, ant_sig_perfil, sig_perfil);
+        }
 
+    // reunir perfil inicial con final
+
+    for (int n_vertice = 1; n_vertice < num_aux; ++ n_vertice) {
+        int actual = (num-1)*num_aux + n_vertice;
+        int anterior = actual -1;
+        int sig_perfil = n_vertice;
+        int ant_sig_perfil = n_vertice-1;
+
+        caras.emplace_back(actual, anterior, ant_sig_perfil);
+        caras.emplace_back(actual, ant_sig_perfil, sig_perfil);
+    }
 
 // tapa inferior
+        vertices.emplace_back(0.0, vertices.front().y, 0.0);
+
+
+    // Unimos con los puntos iniciales de todos los perfiles
+
+    for (int n_perfil = 0; n_perfil < num -1; ++ n_perfil) {
+        int centro_tapa = vertices.size()-1;
+        int actual      = n_perfil * num_aux;
+        int sig         = actual + num_aux;
+        caras.emplace_back(centro_tapa, sig, actual);
+    }
+
+    caras.emplace_back(vertices.size()-1, (num-1)* num_aux, 0);
+
+
+
 
 // tapa superior
+    vertices.emplace_back(0.0, vertices[num_aux-1].y, 0.0);
+    for (int n_perfil = 0; n_perfil < num-1; ++ n_perfil) {
+        int centro_tapa = vertices.size()-1;
+        int actual      = n_perfil * num_aux + (num_aux-1);
+        int sig         = actual + num_aux;
+        caras.emplace_back(centro_tapa, sig, actual);
+    }
+
+    caras.emplace_back(vertices.size()-1, (num-1)* num_aux + (num_aux-1), num_aux-1);
+}
