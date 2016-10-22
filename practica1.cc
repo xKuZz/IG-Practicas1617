@@ -116,8 +116,9 @@ glEnd();
 
 void draw_objects()
 {
-rota.parametros(perfil, 12);
-rota.draw_solido(0.0,1.0,0.0);
+rota.parametros(perfil, 50);
+rota.draw_aristas(0,0,0,1);
+//rota.draw_solido(0,0,0);
 //rota.draw_aristas(0.0,0.0,0.0,1);
 //ply.draw_caras_colores_distintos();
 //cubo_1.draw_caras_colores_distintos();
