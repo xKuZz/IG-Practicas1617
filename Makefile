@@ -121,8 +121,6 @@ DIST          = ../Qt/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_positioning_private.pri \
 		../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_printsupport.pri \
 		../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_printsupport_private.pri \
-		../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_purchasing.pri \
-		../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_purchasing_private.pri \
 		../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_qml.pri \
 		../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_qml_private.pri \
 		../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_qmldebug_private.pri \
@@ -185,7 +183,6 @@ DIST          = ../Qt/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		../Qt/5.7/gcc_64/mkspecs/features/qt_config.prf \
 		../Qt/5.7/gcc_64/mkspecs/linux-g++/qmake.conf \
 		../Qt/5.7/gcc_64/mkspecs/features/spec_post.prf \
-		.qmake.stash \
 		../Qt/5.7/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../Qt/5.7/gcc_64/mkspecs/features/default_pre.prf \
 		../Qt/5.7/gcc_64/mkspecs/features/resolve_config.prf \
@@ -286,8 +283,6 @@ Makefile: practica1.pro ../Qt/5.7/gcc_64/mkspecs/linux-g++/qmake.conf ../Qt/5.7/
 		../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_positioning_private.pri \
 		../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_printsupport.pri \
 		../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_printsupport_private.pri \
-		../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_purchasing.pri \
-		../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_purchasing_private.pri \
 		../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_qml.pri \
 		../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_qml_private.pri \
 		../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_qmldebug_private.pri \
@@ -350,7 +345,6 @@ Makefile: practica1.pro ../Qt/5.7/gcc_64/mkspecs/linux-g++/qmake.conf ../Qt/5.7/
 		../Qt/5.7/gcc_64/mkspecs/features/qt_config.prf \
 		../Qt/5.7/gcc_64/mkspecs/linux-g++/qmake.conf \
 		../Qt/5.7/gcc_64/mkspecs/features/spec_post.prf \
-		.qmake.stash \
 		../Qt/5.7/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../Qt/5.7/gcc_64/mkspecs/features/default_pre.prf \
 		../Qt/5.7/gcc_64/mkspecs/features/resolve_config.prf \
@@ -441,8 +435,6 @@ Makefile: practica1.pro ../Qt/5.7/gcc_64/mkspecs/linux-g++/qmake.conf ../Qt/5.7/
 ../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_positioning_private.pri:
 ../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_printsupport.pri:
 ../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_printsupport_private.pri:
-../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_purchasing.pri:
-../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_purchasing_private.pri:
 ../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_qml.pri:
 ../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_qml_private.pri:
 ../Qt/5.7/gcc_64/mkspecs/modules/qt_lib_qmldebug_private.pri:
@@ -505,7 +497,6 @@ Makefile: practica1.pro ../Qt/5.7/gcc_64/mkspecs/linux-g++/qmake.conf ../Qt/5.7/
 ../Qt/5.7/gcc_64/mkspecs/features/qt_config.prf:
 ../Qt/5.7/gcc_64/mkspecs/linux-g++/qmake.conf:
 ../Qt/5.7/gcc_64/mkspecs/features/spec_post.prf:
-.qmake.stash:
 ../Qt/5.7/gcc_64/mkspecs/features/exclusive_builds.prf:
 ../Qt/5.7/gcc_64/mkspecs/features/default_pre.prf:
 ../Qt/5.7/gcc_64/mkspecs/features/resolve_config.prf:

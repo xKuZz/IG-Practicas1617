@@ -87,6 +87,7 @@ void _triangulos3D::draw_caras_colores_distintos()
 {
 
     if (color.empty()) {
+        cout << "Rellenando colores";
         color.resize(caras.size());
 
         for (unsigned i= 0; i < color.size(); ++i) {

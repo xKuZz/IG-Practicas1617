@@ -31,7 +31,7 @@ GLfloat Window_width,Window_height,Front_plane,Back_plane;
 int UI_window_pos_x=50,UI_window_pos_y=50,UI_window_width=500,UI_window_height=500;
 
 
-vector<_vertex3f> perfil { {1.0, -1.4, 0.0},
+/*vector<_vertex3f> perfil { {1.0, -1.4, 0.0},
                            {1.0, -1.1, 0.0},
                            {0.5, -0.7, 0.0},
                            {0.4, -0.4, 0.0},
@@ -41,6 +41,50 @@ vector<_vertex3f> perfil { {1.0, -1.4, 0.0},
                            {0.5,  1.2, 0.0},
                            {0.3,  1.4, 0.0}
                          };
+*/
+
+vector<_vertex3f> perfil { {1.0, 0.0, 0},
+                           {0.9, 0.1, 0},
+                           {1.0, 0.2, 0},
+                           {0.9, 0.3, 0},
+                           {1.0, 0.4, 0},
+                           {0.9, 0.5, 0},
+                           {1.0, 0.6, 0},
+                           {0.9, 0.7, 0},
+                           {1.0, 0.8, 0},
+                           {0.9, 0.9, 0},
+                           {1.0, 1.0, 0},
+                           {0.9, 1.1, 0},
+                           {1.0, 1.2, 0},
+                           {0.9, 1.3, 0},
+                           {1.0, 1.4, 0},
+                           {0.9, 1.5, 0},
+                           {1.0, 1.6, 0},
+                           {0.9, 1.7, 0},
+                           {1.0, 1.8, 0},
+                           {0.9, 1.9, 0},
+                           {1.0, 2.0, 0},
+                           {0.9, 2.1, 0},
+                           {1.0, 2.2, 0},
+                           {0.9, 2.3, 0},
+                           {1.0, 2.4, 0},
+                           {0.9, 2.5, 0},
+                           {1.0, 2.6, 0},
+                           {0.9, 2.7, 0},
+                           {1.0, 2.8, 0},
+                           {0.9, 2.9, 0},
+                           {1.0, 3.0, 0},
+                           {0.93, 3.4, 0},
+                           {0.76, 3.6, 0},
+                           {0.59, 3.7, 0},
+                           {0.32, 3.75, 0},
+                           {0.25, 3.75, 0},
+                           {0.25, 4.1,    0}
+
+
+
+                         };
+
 
 _cubo cubo_1(2,4,1,4);
 _piramide piramide(0.85,0.7);
@@ -116,9 +160,13 @@ glEnd();
 
 void draw_objects()
 {
-rota.parametros(perfil, 70);
-rota.draw_aristas(0.2,0.1,0.6,1);
-//rota.draw_solido(0,0,0);
+rota.parametros(perfil, 30);
+//rota.draw_puntos(0,0,1,2);
+//rota.draw_caras_colores_distintos();
+//rota.draw_aristas(0.2,0.1,0.6,1);
+rota.draw_solido(0,0,0.9);
+//rota.draw_caras_colores_distintos();
+//rota.draw_solido_ajedrez(0,1,0,0,0,1);
 //rota.draw_aristas(0.0,0.0,0.0,1);
 //ply.draw_caras_colores_distintos();
 //cubo_1.draw_caras_colores_distintos();
