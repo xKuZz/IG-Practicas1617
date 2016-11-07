@@ -86,7 +86,7 @@ class _objeto_ply: public _triangulos3D {
 public:
     _objeto_ply();
 
-int parametros(char* archivo);
+void parametros(char* archivo);
 };
 
 //*************************************************************************
@@ -96,10 +96,10 @@ int parametros(char* archivo);
 class _rotacion: public _triangulos3D {
 public:
     _rotacion();
-    void parametros(const vector<_vertex3f>& perfil1, int num1);
+    void parametros(const vector<_vertex3f>& perfil1, unsigned num1);
 
 vector<_vertex3f> perfil;
-int num;
+unsigned n_rotaciones;
 
 };
 

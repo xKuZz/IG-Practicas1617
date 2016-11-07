@@ -8,6 +8,6 @@ SOURCES = \
     file_ply_stl.cc
 
 
-CONFIG += console c++11
+CONFIG += console c++14
 
 

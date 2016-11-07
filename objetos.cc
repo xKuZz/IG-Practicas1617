@@ -282,115 +282,111 @@ _objeto_ply::_objeto_ply()
 
 }
 
-int _objeto_ply::parametros(char *archivo)
+void _objeto_ply::parametros(char *archivo)
 {
     _file_ply p;
     vector<float> ver_ply;
     vector<int>   car_ply;
-    _vertex3i     car_aux;
-    _vertex3f     ver_aux;
-    p.open(archivo);
-    p.read(ver_ply, car_ply);
 
-    int n_ver = ver_ply.size()/3;
-    int n_car = car_ply.size()/3;
-    vertices.resize(n_ver);
-    caras.resize(n_car);
+    p.open(archivo);          // Abrimos el archivo con el lector proporcionado
+    p.read(ver_ply, car_ply); // Al leerlo obtenemos un vector con puntos de vértices y otra con números para las caras
 
+    for (auto i = 0u; i < ver_ply.size()/3; ++i) // Cada 3 puntos forman un vértice que creamos y añadimos al vector de vértices
+        vertices.emplace_back(ver_ply[i*3], ver_ply[i*3+1], ver_ply[i*3+2]);
 
-    for (int i = 0; i < n_ver; ++i) {
-        ver_aux.x=ver_ply[i*3];
-        ver_aux.y=ver_ply[i*3+1];
-        ver_aux.z=ver_ply[i*3+2];
-        vertices[i]=ver_aux;
-    }
-    for (int i = 0; i < n_car; ++i) {
-        car_aux.x=car_ply[i*3];
-        car_aux.y=car_ply[i*3+1];
-        car_aux.z=car_ply[i*3+2];
-        caras[i]=car_aux;
-    }
+    for (auto i = 0u; i < car_ply.size()/3; ++i) // Cada 3 números se forma una cara que añadios al vector de caras
+        caras.emplace_back(car_ply[i*3], car_ply[i*3+1], car_ply[i*3+2]);
+
     p.close();
-
-
-    return 0;
 }
 _rotacion::_rotacion()
 {
 
 }
 
-void _rotacion::parametros(const vector<_vertex3f>& perfil1, int num1)
+void _rotacion::parametros(const vector<_vertex3f>& perfil1, unsigned num1)
 {
+
     perfil = perfil1;
-    num = num1;
-   _vertex3f vertice_aux;
+    n_rotaciones = num1;
 
-   // tratamiento de los vértices
-   int num_aux = perfil1.size();
-   vertices.resize(num_aux*num);
-   for (int j = 0; j < num; ++j)
-       for (int i = 0; i < num_aux; ++i) {
-           vertice_aux.x=perfil[i].x*cos(2.0*M_PI*j/(1.0*num))+
-                         perfil[i].z*sin(2.0*M_PI*j/(1.0*num));
-           vertice_aux.y=perfil[i].y;
-           vertice_aux.z=-perfil[i].x*sin(2.0*M_PI*j/(1.0*num))+
-                         perfil[i].z*cos(2.0*M_PI*j/(1.0*num));
+   // TRATAMIENTO DE LOS VÉRTICES (Aplicamos la cuenta de la matriz para la rotación sobre el eje Y)
+   for (auto i = 0u; i < n_rotaciones; ++i)
+       for (auto& vertex: perfil)
+           vertices.emplace_back(vertex.x*cos(2.0*M_PI*i/ (1.0*n_rotaciones) )+
+                                 vertex.z*sin(2.0*M_PI*i/ (1.0*n_rotaciones) ),
+
+                                 vertex.y,
+
+                                 vertex.x*sin(2.0*M_PI*i/ (1.0*n_rotaciones) ) +
+                                 vertex.z*cos(2.0*M_PI*i/ (1.0*n_rotaciones) ) );
+
+// TRATAMIENTO DE LAS CARAS
+
+   // Lambdas auxiliares (pa que se entienda mejor)
+   // Devuelve el vértice anterior
+    auto anterior = [](int actual) {
+       return actual - 1;
+    };
+   // Devuelve la posición en el vector de vértices de el vértice actual en el siguiente perfil
+    auto sig_perfil = [this] (int actual) {
+       return actual + perfil.size();
+    };
 
 
-           vertices[i+j*num_aux]=vertice_aux;
-       }
+    for (auto n_perfil = 0u; n_perfil < n_rotaciones -1; ++n_perfil) // Recorremos todos los perfiles menos el último
+        for (auto n_vertice = 1u; n_vertice < perfil.size(); ++n_vertice) { // Recorremos los vértices a partir del 1
+            // Calculamos cual es el vértice actual en el vector
+            auto   actual       = n_perfil*perfil.size() + n_vertice;
 
-
-// tratamiento de las caras
-    for (int n_perfil = 0; n_perfil < num -1; ++n_perfil)
-        for (int n_vertice = 1; n_vertice < num_aux; ++n_vertice) {
-            int   actual       = n_perfil*num_aux + n_vertice;
-            int anterior       = actual - 1;
-            int sig_perfil     = actual + num_aux;
-            int ant_sig_perfil = anterior + num_aux;
-            caras.emplace_back(actual, anterior, ant_sig_perfil);
-            caras.emplace_back(actual, ant_sig_perfil, sig_perfil);
+            // Unimos dos puntos del primer perfil con uno del segundo (Sentido antihorario)
+            caras.emplace_back(actual, anterior(actual), sig_perfil(anterior(actual)));
+            // Unimos un punto del primer perfil con dos del segundo (Sentido antihorario)
+            caras.emplace_back(actual, sig_perfil(anterior(actual)), sig_perfil(actual));
         }
 
-    // reunir perfil inicial con final
+    // Reunimos el perfil final con el inicial
 
-    for (int n_vertice = 1; n_vertice < num_aux; ++ n_vertice) {
-        int actual = (num-1)*num_aux + n_vertice;
-        int anterior = actual -1;
-        int sig_perfil = n_vertice;
-        int ant_sig_perfil = n_vertice-1;
+    for (auto n_vertice = 1u; n_vertice < perfil.size(); ++ n_vertice) {
+        // El actual es un vértice del último perfil
+        auto actual = (n_rotaciones-1)*perfil.size() + n_vertice;
+        auto sig_perfil = n_vertice; // El siguiente es el vértice en el perfil 0
 
-        caras.emplace_back(actual, anterior, ant_sig_perfil);
-        caras.emplace_back(actual, ant_sig_perfil, sig_perfil);
+        //Unimos dos triangulos en sentido antihorario
+        caras.emplace_back(actual, anterior(actual), anterior(sig_perfil));
+        caras.emplace_back(actual, anterior(sig_perfil), sig_perfil);
     }
 
-// tapa inferior
-        vertices.emplace_back(0.0, vertices.front().y, 0.0);
+    // TAPA INFERIOR
+        // Proyectar sobre el eje Y supone dejar a 0 X, Z
+        auto proyeccion_y = [](const _vertex3f& v) {
+            return _vertex3f(0, v.y, 0);
+        };
+
+        // Para la tapa inferior cojemos el primer vértice de un perfil
+        vertices.emplace_back(proyeccion_y(vertices.front()));
 
 
-    // Unimos con los puntos iniciales de todos los perfiles
+    // Unimos con los puntos iniciales de los n-1 primeros perfiles
 
-    for (int n_perfil = 0; n_perfil < num -1; ++ n_perfil) {
-        int centro_tapa = vertices.size()-1;
-        int actual      = n_perfil * num_aux;
-        int sig         = actual + num_aux;
-        caras.emplace_back(centro_tapa, sig, actual);
+    for (auto n_perfil = 0u; n_perfil < n_rotaciones - 1; ++ n_perfil) {
+        auto centro_tapa = vertices.size()-1;
+        auto actual      = n_perfil * perfil.size();
+        caras.emplace_back(centro_tapa, sig_perfil(actual), actual);
     }
 
-    caras.emplace_back(vertices.size()-1, (num-1)* num_aux, 0);
+    // El último triángulo a mano
+    caras.emplace_back(vertices.size()-1, 0, (n_rotaciones-1)* perfil.size());
 
 
-
-
-// tapa superior
-    vertices.emplace_back(0.0, vertices[num_aux-1].y, 0.0);
-    for (int n_perfil = 0; n_perfil < num-1; ++ n_perfil) {
-        int centro_tapa = vertices.size()-1;
-        int actual      = n_perfil * num_aux + (num_aux-1);
-        int sig         = actual + num_aux;
-        caras.emplace_back(centro_tapa, sig, actual);
+// TAPA SUPERIOR
+    // Igual que la inferior pero tomando el último vértice de un perfil
+    vertices.emplace_back(proyeccion_y( vertices[ perfil.size() - 1 ]) );
+    for (auto n_perfil = 0u; n_perfil < n_rotaciones - 1; ++ n_perfil) {
+        auto centro_tapa = vertices.size()-1;
+        auto actual      = n_perfil * perfil.size() + (perfil.size()-1);
+        caras.emplace_back(centro_tapa, actual, sig_perfil(actual));
     }
 
-    caras.emplace_back(vertices.size()-1, (num-1)* num_aux + (num_aux-1), num_aux-1);
+    caras.emplace_back(vertices.size()-1, perfil.size()-1, n_rotaciones* perfil.size() - 1);
 }

@@ -160,15 +160,16 @@ glEnd();
 
 void draw_objects()
 {
+
 rota.parametros(perfil, 30);
 //rota.draw_puntos(0,0,1,2);
-//rota.draw_caras_colores_distintos();
+//rota.draw_solido(0,0,1);
 //rota.draw_aristas(0.2,0.1,0.6,1);
-rota.draw_solido(0,0,0.9);
-//rota.draw_caras_colores_distintos();
+//rota.draw_solido(0,0,0.9);
+rota.draw_caras_colores_distintos();
 //rota.draw_solido_ajedrez(0,1,0,0,0,1);
 //rota.draw_aristas(0.0,0.0,0.0,1);
-//ply.draw_caras_colores_distintos();
+//ply.draw_solido(0,0,1);
 //cubo_1.draw_caras_colores_distintos();
 //cubo_1.draw_aristas(1.0,0.5,0.0,2);
 //piramide_1.draw_solido_ajedrez(1.0,0.5,0.0,1.0,1.0,0.0);
@@ -326,10 +327,11 @@ glutKeyboardFunc(normal_keys);
 // asignación de la funcion llamada "tecla_Especial" al evento correspondiente
 glutSpecialFunc(special_keys);
 
+ply.parametros(argv[1]);
 // funcion de inicialización
 initialize();
 
-ply.parametros(argv[1]);
+
 // inicio del bucle de eventos
 glutMainLoop();
 return 0;

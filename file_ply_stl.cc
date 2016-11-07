@@ -14,12 +14,10 @@
 //
 //******************************************************************************
 
-
 _file_ply::_file_ply()
 {
 _element_token_table Element1;
 const char* Text_tokens[]={"ply","format","ascii","element","vertex","face","end_header","zzzzzzzz",""};
-
 for (int i=0;i<_tokens(NUMBER);i++)
 	{
 	Element1.Text=Text_tokens[i];
