@@ -309,9 +309,24 @@ void _rotacion::parametros(const vector<_vertex3f>& perfil1, unsigned num1)
     };
 
 
+    _vertex3f color_par(0,0,1);
+    _vertex3f color_impar(0,1,0);
+    _vertex3f color_tapa_sup(1,0,0);
+    _vertex3f color_tapa_inf(0,0,0);
+
     for (auto n_perfil = 0u; n_perfil < n_rotaciones -1; ++n_perfil)
+
         for (auto n_vertice = 1u; n_vertice < perfil.size(); ++n_vertice) {
             auto   actual       = n_perfil*perfil.size() + n_vertice;
+            if (n_perfil % 2 == 0) {
+                color.emplace_back(color_par);
+                color.emplace_back(color_par);
+            }
+            else {
+                color.emplace_back(color_impar);
+                color.emplace_back(color_impar);
+            }
+
             caras.emplace_back(actual, anterior(actual), sig_perfil(anterior(actual)));
             caras.emplace_back(actual, sig_perfil(anterior(actual)), sig_perfil(actual));
         }
@@ -320,6 +335,14 @@ void _rotacion::parametros(const vector<_vertex3f>& perfil1, unsigned num1)
         auto actual = (n_rotaciones-1)*perfil.size() + n_vertice;
         auto sig_perfil = n_vertice;
 
+        if ((n_rotaciones - 1) % 2 == 0) {
+            color.push_back(color_par);
+            color.push_back(color_par);
+        }
+        else {
+            color.push_back(color_impar);
+            color.push_back(color_impar);
+        }
         caras.emplace_back(actual, anterior(actual), anterior(sig_perfil));
         caras.emplace_back(actual, anterior(sig_perfil), sig_perfil);
     }
@@ -335,10 +358,12 @@ void _rotacion::parametros(const vector<_vertex3f>& perfil1, unsigned num1)
     for (auto n_perfil = 0u; n_perfil < n_rotaciones - 1; ++n_perfil) {
         auto centro_tapa = vertices.size()-1;
         auto actual      = n_perfil * perfil.size();
+        color.push_back(color_tapa_inf);
         caras.emplace_back(centro_tapa, sig_perfil(actual), actual);
     }
 
     // El último triángulo a mano
+    color.push_back(color_tapa_inf);
     caras.emplace_back(vertices.size()-1, 0, (n_rotaciones-1)* perfil.size());
 
 
@@ -348,9 +373,11 @@ void _rotacion::parametros(const vector<_vertex3f>& perfil1, unsigned num1)
     for (auto n_perfil = 0u; n_perfil < n_rotaciones - 1; ++ n_perfil) {
         auto centro_tapa = vertices.size()-1;
         auto actual      = n_perfil * perfil.size() + (perfil.size()-1);
+        color.push_back(color_tapa_sup);
         caras.emplace_back(centro_tapa, actual, sig_perfil(actual));
     }
 
+
+    color.push_back(color_tapa_sup);
     caras.emplace_back(vertices.size()-1, perfil.size()-1, n_rotaciones* perfil.size() - 1);
-    inicializar_colores();
 }

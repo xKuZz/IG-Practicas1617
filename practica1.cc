@@ -87,7 +87,7 @@ vector<_vertex3f> perfil { {1.0, 0.0, 0},
 
 // Modos de pintar
 enum class DrawMode { Aristas, Puntos, Solido, Ajedrez, Colores };
-DrawMode draw_mode = DrawMode::Aristas;
+DrawMode draw_mode = DrawMode::Colores;
 
 _cubo cubo_1(2,4,1,4);
 _piramide piramide(0.85,0.7);
@@ -185,21 +185,6 @@ default:
     cerr << "Modo de pintura erróneo\n";
 }
 
-//rota.draw_puntos(0,0,1,2);
-//rota.draw_solido(0,0,1);
-//rota.draw_aristas(0.2,0.1,0.6,1);
-//rota.draw_solido(0,0,0.9);
-//rota.draw_caras_colores_distintos();
-//rota.draw_solido_ajedrez(0,0,0.2,0,0,1);
-//rota.draw_aristas(0.0,0.0,0.0,1);
-//ply.draw_solido(0,0,1);
-//cubo_1.draw_caras_colores_distintos();
-//cubo_1.draw_aristas(1.0,0.5,0.0,2);
-//piramide_1.draw_solido_ajedrez(1.0,0.5,0.0,1.0,1.0,0.0);
-
-//cubo_1.draw_solido(1.0,1.0,0.0);
-//cubo_1.draw_puntos(1.0,1.0,0.0,10);
-//cubo_1.draw_solido_ajedrez(1.0,0.5,0.0,1.0,1.0,0.0);
 }
 
 
@@ -246,12 +231,16 @@ glutPostRedisplay();
 
 void normal_keys(unsigned char Tecla1,int x,int y)
 {
-switch(toupper(Tecla1)) {
-case 'Q': exit(0); break;
-case '1': toDraw = cubo_1; break;
-case '2': toDraw = piramide; break;
-case '3': toDraw = ply; break;
-case '4': toDraw = rota; break;
+switch(tolower(Tecla1)) {
+case 'q': exit(0); break;
+case '1': toDraw = ply; break;
+case '2': toDraw = rota; break;
+//case '3': toDraw = ply; break;
+case 'p': draw_mode = DrawMode::Puntos; break;
+case 'l': draw_mode = DrawMode::Aristas; break;
+case 's': draw_mode = DrawMode::Solido; break;
+case 'a': draw_mode = DrawMode::Ajedrez; break;
+case 'e': draw_mode = DrawMode::Colores; break;
 }
 
 }
@@ -276,11 +265,6 @@ switch (Tecla1){
 	case GLUT_KEY_DOWN:Observer_angle_x++;break;
 	case GLUT_KEY_PAGE_UP:Observer_distance*=1.2;break;
 	case GLUT_KEY_PAGE_DOWN:Observer_distance/=1.2;break;
-case GLUT_KEY_F1:draw_mode = DrawMode::Puntos; break;
-case GLUT_KEY_F2:draw_mode = DrawMode::Aristas; break;
-case GLUT_KEY_F3:draw_mode = DrawMode::Solido; break;
-case GLUT_KEY_F4:draw_mode = DrawMode::Ajedrez; break;
-case GLUT_KEY_F5:draw_mode = DrawMode::Colores; break;
 	}
 glutPostRedisplay();
 }
@@ -362,7 +346,7 @@ glutKeyboardFunc(normal_keys);
 glutSpecialFunc(special_keys);
 
 ply.parametros(argv[1]);
-rota.parametros(perfil, 10);
+rota.parametros(perfil, 20);
 toDraw = rota;
 // funcion de inicialización
 initialize();
