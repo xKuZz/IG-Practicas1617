@@ -85,36 +85,11 @@ void _triangulos3D::draw_solido_ajedrez(float r1, float g1, float b1, float r2, 
 
 void _triangulos3D::draw_caras_colores_distintos()
 {
-
-    if (color.empty()) {
-        cout << "Rellenando colores";
-        color.resize(caras.size());
-
-        for (unsigned i= 0; i < color.size(); ++i) {
-          bool repetido = true;
-
-          while (repetido) {
-            repetido = false;
-            float color1 = (float) rand() / (float) RAND_MAX;
-            float color2 = (float) rand() / (float) RAND_MAX;
-            float color3 = (float) rand() / (float) RAND_MAX;
-
-            color[i].x  = color1;
-            color[i].y  = color2;
-            color[i].z  = color3;
-
-            for (unsigned j = 0; j < i && !repetido; ++j)
-                if (color[i] == color[j])
-                    repetido = true;
-          }
-        }
-
-    }
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glBegin(GL_TRIANGLES);
 
     for (unsigned i = 0; i < caras.size(); ++i) {
-        glColor3fv((GLfloat*) &color[i]);
+        glColor3f(color[i].x, color[i].y, color[i].z);
         glVertex3fv((GLfloat*) &vertices[caras[i]._0]);
         glVertex3fv((GLfloat*) &vertices[caras[i]._1]);
         glVertex3fv((GLfloat*) &vertices[caras[i]._2]);
@@ -126,7 +101,6 @@ void _triangulos3D::draw_caras_colores_distintos()
 
 void _triangulos3D::inicializar_colores()
 {
-    if (color.empty()) {
         color.resize(caras.size());
 
         for (unsigned i= 0; i < color.size(); ++i) {
@@ -148,9 +122,9 @@ void _triangulos3D::inicializar_colores()
           }
         }
 
-    }
+ }
 
-}
+
 
 void _triangulos3D::cara_en(unsigned pos, int x, int y, int z)
 {
@@ -291,13 +265,14 @@ void _objeto_ply::parametros(char *archivo)
     p.open(archivo);          // Abrimos el archivo con el lector proporcionado
     p.read(ver_ply, car_ply); // Al leerlo obtenemos un vector con puntos de vértices y otra con números para las caras
 
-    for (auto i = 0u; i < ver_ply.size()/3; ++i) // Cada 3 puntos forman un vértice que creamos y añadimos al vector de vértices
-        vertices.emplace_back(ver_ply[i*3], ver_ply[i*3+1], ver_ply[i*3+2]);
+    for (auto i = 0u; i < ver_ply.size(); i+=3) // Cada 3 puntos forman un vértice que creamos y añadimos al vector de vértices
+        vertices.emplace_back(ver_ply[i], ver_ply[i+1], ver_ply[i+2]);
 
-    for (auto i = 0u; i < car_ply.size()/3; ++i) // Cada 3 números se forma una cara que añadios al vector de caras
-        caras.emplace_back(car_ply[i*3], car_ply[i*3+1], car_ply[i*3+2]);
+    for (auto i = 0u; i < car_ply.size(); i+=3) // Cada 3 números se forma una cara que añadios al vector de caras
+        caras.emplace_back(car_ply[i], car_ply[i+1], car_ply[i+2]);
 
     p.close();
+    inicializar_colores();
 }
 _rotacion::_rotacion()
 {
@@ -334,42 +309,30 @@ void _rotacion::parametros(const vector<_vertex3f>& perfil1, unsigned num1)
     };
 
 
-    for (auto n_perfil = 0u; n_perfil < n_rotaciones -1; ++n_perfil) // Recorremos todos los perfiles menos el último
-        for (auto n_vertice = 1u; n_vertice < perfil.size(); ++n_vertice) { // Recorremos los vértices a partir del 1
-            // Calculamos cual es el vértice actual en el vector
+    for (auto n_perfil = 0u; n_perfil < n_rotaciones -1; ++n_perfil)
+        for (auto n_vertice = 1u; n_vertice < perfil.size(); ++n_vertice) {
             auto   actual       = n_perfil*perfil.size() + n_vertice;
-
-            // Unimos dos puntos del primer perfil con uno del segundo (Sentido antihorario)
             caras.emplace_back(actual, anterior(actual), sig_perfil(anterior(actual)));
-            // Unimos un punto del primer perfil con dos del segundo (Sentido antihorario)
             caras.emplace_back(actual, sig_perfil(anterior(actual)), sig_perfil(actual));
         }
 
-    // Reunimos el perfil final con el inicial
-
     for (auto n_vertice = 1u; n_vertice < perfil.size(); ++ n_vertice) {
-        // El actual es un vértice del último perfil
         auto actual = (n_rotaciones-1)*perfil.size() + n_vertice;
-        auto sig_perfil = n_vertice; // El siguiente es el vértice en el perfil 0
+        auto sig_perfil = n_vertice;
 
-        //Unimos dos triangulos en sentido antihorario
         caras.emplace_back(actual, anterior(actual), anterior(sig_perfil));
         caras.emplace_back(actual, anterior(sig_perfil), sig_perfil);
     }
 
-    // TAPA INFERIOR
-        // Proyectar sobre el eje Y supone dejar a 0 X, Z
-        auto proyeccion_y = [](const _vertex3f& v) {
-            return _vertex3f(0, v.y, 0);
-        };
+    // Proyectar sobre el eje Y supone dejar a 0 X, Z
+    auto proyeccion_y = [](const _vertex3f& v) {
+        return _vertex3f(0, v.y, 0);
+    };
 
-        // Para la tapa inferior cojemos el primer vértice de un perfil
+    // TAPA INFERIOR
         vertices.emplace_back(proyeccion_y(vertices.front()));
 
-
-    // Unimos con los puntos iniciales de los n-1 primeros perfiles
-
-    for (auto n_perfil = 0u; n_perfil < n_rotaciones - 1; ++ n_perfil) {
+    for (auto n_perfil = 0u; n_perfil < n_rotaciones - 1; ++n_perfil) {
         auto centro_tapa = vertices.size()-1;
         auto actual      = n_perfil * perfil.size();
         caras.emplace_back(centro_tapa, sig_perfil(actual), actual);
@@ -380,8 +343,8 @@ void _rotacion::parametros(const vector<_vertex3f>& perfil1, unsigned num1)
 
 
 // TAPA SUPERIOR
-    // Igual que la inferior pero tomando el último vértice de un perfil
     vertices.emplace_back(proyeccion_y( vertices[ perfil.size() - 1 ]) );
+
     for (auto n_perfil = 0u; n_perfil < n_rotaciones - 1; ++ n_perfil) {
         auto centro_tapa = vertices.size()-1;
         auto actual      = n_perfil * perfil.size() + (perfil.size()-1);
@@ -389,4 +352,5 @@ void _rotacion::parametros(const vector<_vertex3f>& perfil1, unsigned num1)
     }
 
     caras.emplace_back(vertices.size()-1, perfil.size()-1, n_rotaciones* perfil.size() - 1);
+    inicializar_colores();
 }

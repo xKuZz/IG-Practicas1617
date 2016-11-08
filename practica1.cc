@@ -85,11 +85,16 @@ vector<_vertex3f> perfil { {1.0, 0.0, 0},
 
                          };
 
+// Modos de pintar
+enum class DrawMode { Aristas, Puntos, Solido, Ajedrez, Colores };
+DrawMode draw_mode = DrawMode::Aristas;
 
 _cubo cubo_1(2,4,1,4);
 _piramide piramide(0.85,0.7);
 _objeto_ply ply;
 _rotacion rota;
+// Objeto a pintar
+_triangulos3D toDraw;
 //**************************************************************************
 //
 //***************************************************************************
@@ -160,14 +165,32 @@ glEnd();
 
 void draw_objects()
 {
+switch (draw_mode) {
+case DrawMode::Aristas:
+    toDraw.draw_aristas(0.2,0.1,0.6,1);
+    break;
+case DrawMode::Puntos:
+    toDraw.draw_puntos(1,0.5,0,2);
+    break;
+case DrawMode::Solido:
+    toDraw.draw_solido(0,0,1);
+    break;
+case DrawMode::Ajedrez:
+    toDraw.draw_solido_ajedrez(0,0,0.2,0,0,1);
+    break;
+case DrawMode::Colores:
+    toDraw.draw_caras_colores_distintos();
+    break;
+default:
+    cerr << "Modo de pintura erróneo\n";
+}
 
-rota.parametros(perfil, 30);
 //rota.draw_puntos(0,0,1,2);
 //rota.draw_solido(0,0,1);
 //rota.draw_aristas(0.2,0.1,0.6,1);
 //rota.draw_solido(0,0,0.9);
-rota.draw_caras_colores_distintos();
-//rota.draw_solido_ajedrez(0,1,0,0,0,1);
+//rota.draw_caras_colores_distintos();
+//rota.draw_solido_ajedrez(0,0,0.2,0,0,1);
 //rota.draw_aristas(0.0,0.0,0.0,1);
 //ply.draw_solido(0,0,1);
 //cubo_1.draw_caras_colores_distintos();
@@ -223,8 +246,14 @@ glutPostRedisplay();
 
 void normal_keys(unsigned char Tecla1,int x,int y)
 {
+switch(toupper(Tecla1)) {
+case 'Q': exit(0); break;
+case '1': toDraw = cubo_1; break;
+case '2': toDraw = piramide; break;
+case '3': toDraw = ply; break;
+case '4': toDraw = rota; break;
+}
 
-if (toupper(Tecla1)=='Q') exit(0);
 }
 
 //***************************************************************************
@@ -237,7 +266,7 @@ if (toupper(Tecla1)=='Q') exit(0);
 
 //***************************************************************************
 
-void special_keys(int Tecla1,int x,int y)
+void special_keys(int Tecla1, int x,int y)
 {
 
 switch (Tecla1){
@@ -247,6 +276,11 @@ switch (Tecla1){
 	case GLUT_KEY_DOWN:Observer_angle_x++;break;
 	case GLUT_KEY_PAGE_UP:Observer_distance*=1.2;break;
 	case GLUT_KEY_PAGE_DOWN:Observer_distance/=1.2;break;
+case GLUT_KEY_F1:draw_mode = DrawMode::Puntos; break;
+case GLUT_KEY_F2:draw_mode = DrawMode::Aristas; break;
+case GLUT_KEY_F3:draw_mode = DrawMode::Solido; break;
+case GLUT_KEY_F4:draw_mode = DrawMode::Ajedrez; break;
+case GLUT_KEY_F5:draw_mode = DrawMode::Colores; break;
 	}
 glutPostRedisplay();
 }
@@ -316,7 +350,7 @@ glutInitWindowSize(UI_window_width,UI_window_height);
 
 // llamada para crear la ventana, indicando el titulo (no se visualiza hasta que se llama
 // al bucle de eventos)
-glutCreateWindow("Práctica 1");
+glutCreateWindow("Práctica 2");
 
 // asignación de la funcion llamada "dibujar" al evento de dibujo
 glutDisplayFunc(draw_scene);
@@ -328,6 +362,8 @@ glutKeyboardFunc(normal_keys);
 glutSpecialFunc(special_keys);
 
 ply.parametros(argv[1]);
+rota.parametros(perfil, 10);
+toDraw = rota;
 // funcion de inicialización
 initialize();
 
