@@ -81,6 +81,25 @@ void Scene_p4::drawMe()
 
 }
 
+void Scene_p4::drawNormales()
+{
+    glPushMatrix();
+        glScaled(4,4,4);
+        // Pintamos lata
+        lata_pcue.draw_normales();
+        lata_sup.draw_normales();
+        lata_inf.draw_normales();
+    glPopMatrix();
+    glPushMatrix();
+        glTranslated(0, 0, 3);
+        peon_wood.draw_normales();
+        glTranslated(2,0,-1);
+        peon_color.draw_normales();
+        glTranslated(2,0,-1);
+        peon_color.draw_normales();
+    glPopMatrix();
+}
+
 void Scene_p4::modifyAlpha(float value)
 {
     static_cast<DirectionalLightSource*>(lights[1].get())->modifyAlpha(value);

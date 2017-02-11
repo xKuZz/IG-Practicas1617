@@ -15,6 +15,7 @@
         Scene_p4();
         void initialize();
         void drawMe();
+        void drawNormales();
         void modifyAlpha(float value);
         void modifyBeta(float value);
         bool empty();

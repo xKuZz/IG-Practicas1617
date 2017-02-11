@@ -12,7 +12,7 @@ RGBColor::RGBColor(float r, float g, float b)
     color[2] = b;
 }
 
-void RGBColor::applyColor()
+void RGBColor::applyColor() const
 {
     glColor3fv(&color[0]);
 }

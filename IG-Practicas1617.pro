@@ -3,7 +3,7 @@ CONFIG += console c++14
 CONFIG -= app_bundle
 QT += opengl
 
-LIBS += -lglut32 -lopengl32
+LIBS += -lglut32 -lopengl32 -lglu32
 SOURCES += \
     objetos.cc \
     file_ply_stl.cc \
@@ -13,7 +13,9 @@ SOURCES += \
     textura.cpp \
     rgb.cpp \
     material.cpp \
-    scene_p4.cpp
+    scene_p4.cpp \
+    scene_p5.cpp \
+    camera.cpp
 
 HEADERS += \
     objetos.h \
@@ -24,4 +26,6 @@ HEADERS += \
     textura.h \
     rgb.h \
     material.h \
-    scene_p4.h
+    scene_p4.h \
+    scene_p5.h \
+    camera.h

@@ -15,15 +15,16 @@
 #include "file_ply_stl.h"
 #include "transform_helpers.h"
 #include "textura.h"
+#include "rgb.h"
 
 using namespace std;
 
 // Modos de pintar
-enum class DrawMode { Aristas, Puntos, Solido, Ajedrez, Colores, Plana, Suave,
-                      PlanaTex, SuaveTex };
+enum class DrawMode { Aristas, Puntos, Solido, Ajedrez, ShowSeleccion, Seleccion, Colores,
+                      Normales, Plana, Suave, PlanaTex, SuaveTex};
 
 // Objetos a pintar
-enum class DrawObject { Ply, Rota, Jerarquico, Escena };
+enum class DrawObject { Ply, Rota, Jerarquico, Escena, Escena5 };
 
 //*************************************************************************
 // clase punto
@@ -60,16 +61,23 @@ void    draw_iluminacion_plana();
 void    draw_iluminacion_suave();
 void    draw_iluminacion_plana_tex(Texture* tex = nullptr);
 void    draw_iluminacion_suave_tex(Texture* tex = nullptr);
+void    draw_normales();
 void    inicializar_colores();
 void    calcularNormalesVertices();
 void    calcularNormalesCaras();
 void    calcularTexels();
-
 void    cara_en(unsigned pos, int x, int y, int z);
-
 array<float, 4> getPlanoS() const;
-
 array<float, 4> getPlanoT() const;
+
+/**    PRÁCTICA 5    **/
+static unsigned currentName;
+void   draw_select();
+void   draw_selected_color(const RGBColor &selected, const RGBColor &notSelected);
+static std::vector<bool> selections;
+static void adjustToFitSelections();
+
+/** **************** **/
 
 protected:
 vector<_vertex3i> caras;
@@ -79,9 +87,8 @@ vector<_vertex3f> normalesCaras;
 vector<Texel> texels;
 array<float, 4> planoS { {1.0, 0.0, 0.0, 0.0} };
 array<float, 4> planoT { {0.0, 1.0, 0.0, 0.0} };
-unsigned perfilSize;
-};
 
+};
 
 //*************************************************************************
 // clase cubo

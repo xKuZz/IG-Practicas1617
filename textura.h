@@ -16,7 +16,7 @@ public:
     Texture(const QString& rute, bool automatic = true);
 
     void enable() const;
-    void disable() const;
+    static void disable();
     void setPlanes(const std::array<float, 4> &s,
                    const std::array<float, 4> &t);
 

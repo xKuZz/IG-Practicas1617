@@ -20,5 +20,5 @@ void Material::enable()
     if (tex)
         tex->enable();
     else
-        tex->disable();
+        Texture::disable();
 }

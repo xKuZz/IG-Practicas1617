@@ -34,7 +34,7 @@ void Texture::enable() const
     }
 }
 
-void Texture::disable() const
+void Texture::disable()
 {
     glDisable(GL_TEXTURE_2D);
 }

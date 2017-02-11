@@ -1,13 +1,14 @@
 #ifndef RGB_H
 #define RGB_H
 #include <GL/glut.h>
+#include <iostream>
 
 class RGBColor
 {
 public:
     RGBColor();
     RGBColor(float r, float g, float b);
-    void applyColor();
+    void applyColor() const;
     const float* data() const;
     float getR() const;
     float getG() const;

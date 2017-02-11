@@ -5,15 +5,18 @@
 //
 // GPL
 //**************************************************************************
-
+#define DEBUG_IG_ON
 #include "stdlib.h"
 #include "stdio.h"
 #include <GL/glut.h>
+#include <array>
 #include <ctype.h>
+#include <map>
 #include <vector>
 
 #include "objetos.h"
 #include "scene_p4.h"
+#include "scene_p5.h"
 
 using namespace std;
 
@@ -71,14 +74,22 @@ vector<_vertex3f> perfil { {1.0, 0.0, 0},
                          };
 
 
-DrawMode draw_mode = DrawMode::Colores;
-DrawObject draw_object = DrawObject::Escena;
+
 _objeto_ply ply;
 _rota_tex rota;
 Scene_p4 scene;
 
 // Objeto a pintar
 _triangulos3D* toDraw;
+bool normales = false;
+
+// Variables Práctica 5
+Scene_p5 scene_p5;
+DrawMode draw_mode = DrawMode::ShowSeleccion;
+DrawObject draw_object = DrawObject::Escena5;
+  // Estáticas
+  unsigned _triangulos3D::currentName = 0;
+  std::vector<bool> _triangulos3D::selections;
 //**************************************************************************
 //
 //***************************************************************************
@@ -102,7 +113,10 @@ glLoadIdentity();
 
 // formato(x_minimo,x_maximo, y_minimo, y_maximo,Front_plane, plano_traser)
 //  Front_plane>0  Back_plane>PlanoDelantero)
-glFrustum(-Window_width,Window_width,-Window_height,Window_height,Front_plane,Back_plane);
+if (draw_object == DrawObject::Escena5)
+    scene_p5.getCurrentCamera()->applyProjection();
+else
+    glFrustum(-Window_width,Window_width,-Window_height,Window_height,Front_plane,Back_plane);
 }
 
 //**************************************************************************
@@ -115,9 +129,14 @@ void change_observer()
 // posicion del observador
 glMatrixMode(GL_MODELVIEW);
 glLoadIdentity();
-glTranslatef(0,0,-Observer_distance);
-glRotatef(Observer_angle_x,1,0,0);
-glRotatef(Observer_angle_y,0,1,0);
+
+  if (draw_object == DrawObject::Escena5)
+    scene_p5.getCurrentCamera()->setViewer();
+  else {
+    glTranslatef(0,0,-Observer_distance);
+    glRotatef(Observer_angle_x,1,0,0);
+    glRotatef(Observer_angle_y,0,1,0);
+  }
 }
 
 //**************************************************************************
@@ -152,9 +171,6 @@ _cilindro tubo(1, 1, false, false);
 _prisma_4 brazo(5,2,1.5);
 
 double split = 0.2;
-
-
-
 
 /** ESCALAS **/
 // RELATIVAS A TUBO
@@ -197,22 +213,26 @@ else {
     glLightfv(GL_LIGHT7, GL_DIFFUSE, diffuse.data());
     glEnable(GL_LIGHT7);
 }
+
 // Colores para pintar
 float r1 = 0; float g1 = 1; float b1 = 0;
-float r2 = 0; float g2 = 0; float b2 = 0.5;
+float r2 = 0.3; float g2 = 0.3; float b2 = 0.3;
 int grosor = 2;
 
-if (draw_object == DrawObject::Jerarquico) {
+if (draw_object == DrawObject::Jerarquico || draw_object == DrawObject::Escena5) {
   glMatrixMode(GL_MODELVIEW);
-
   glPushMatrix();
     base.applyScale();
     cilindro.draw(draw_mode, r1, g1, b1, r2, g2, b2, grosor);
+    if (normales)
+        cilindro.draw_normales();
   glPopMatrix();
   glTranslated(0,base.getY(),0);
   glPushMatrix();
     soporte.applyScale();
     tubo.draw(draw_mode, r1, g1, b1, r2, g2, b2, grosor);
+    if (normales)
+        tubo.draw_normales();
   glPopMatrix();
 
   glTranslated(0,soporte.getY(),0);
@@ -222,6 +242,8 @@ if (draw_object == DrawObject::Jerarquico) {
     glPushMatrix();
         horiz.applyScale();
         cilindro.draw(draw_mode, r1, g1, b1, r2, g2, b2, grosor);
+        if (normales)
+            cilindro.draw_normales();
     glPopMatrix();
 
     // Vamos a colocar el primer brazo. No quitamos la rotación anterior para seguir en posición
@@ -234,17 +256,23 @@ if (draw_object == DrawObject::Jerarquico) {
       glTranslated(-brazo.ancho/2,(brazo.largo*(1-cuadrado.getY()))/2,0);
       cuadrado.applyScale();
       brazo.draw(draw_mode, r1, g1, b1, r2, g2, b2, grosor);
+      if (normales)
+          brazo.draw_normales();
     glPopMatrix();
     // Una vez tenemos el eje de rotación listo alargamos el brazo
     glTranslated(brazo.ancho/2+brazo.ancho*alarga_brazo1.getX()/2,0,0);
     glPushMatrix();
         alarga_brazo1.applyScale();
         brazo.draw(draw_mode, r1, g1, b1, r2, g2, b2, grosor);
+        if (normales)
+            brazo.draw_normales();
     glPopMatrix();
     glTranslated(0,-split/2,0);
     glPushMatrix();
       conecta.applyScale();
       cilindro.draw(draw_mode, r1, g1, b1, r2, g2, b2, grosor);
+      if (normales)
+          cilindro.draw_normales();
     glPopMatrix();
     glTranslated(0,1,0);
 
@@ -255,12 +283,16 @@ if (draw_object == DrawObject::Jerarquico) {
     glPushMatrix();
         brazo2_s.applyScale();
         brazo.draw(draw_mode, r1, g1, b1, r2, g2, b2, grosor);
+        if (normales)
+            brazo.draw_normales();
     glPopMatrix();
 
     glTranslated(brazo.ancho*(brazo2_s.getX() + alarga_brazo2.getX())/2,0,0);
     glPushMatrix();
         alarga_brazo2.applyScale();
         brazo.draw(draw_mode, r1, g1, b1, r2, g2, b2, grosor);
+        if (normales)
+            brazo.draw_normales();
     glPopMatrix();
 
     // Iniciamos el soporte de las pinzas
@@ -268,6 +300,8 @@ if (draw_object == DrawObject::Jerarquico) {
     glPushMatrix();
         inicio_gancho.applyScale();
         cilindro.draw(draw_mode, r1, g1, b1, r2, g2, b2, grosor);
+        if (normales)
+            cilindro.draw_normales();
     glPopMatrix();
 
     glRotated(90,1,0,0);
@@ -284,6 +318,8 @@ if (draw_object == DrawObject::Jerarquico) {
     glPushMatrix();
         sujeta_pinzas.applyScale();
         cilindro.draw(draw_mode, r1, g1, b1, r2, g2, b2, grosor);
+        if (normales)
+            cilindro.draw_normales();
     glPopMatrix();
 
 
@@ -295,7 +331,9 @@ if (draw_object == DrawObject::Jerarquico) {
       glTranslated(-0.1, 0, 0);
       glRotated(-pinzas.getAngle(),0,0,1);
       pinza.applyScale();
-      brazo.draw(draw_mode, r1, g1, b1, r2, g2, b2, grosor);;
+      brazo.draw(draw_mode, r1, g1, b1, r2, g2, b2, grosor);
+      if (normales)
+          brazo.draw_normales();
     glPopMatrix();
 
     glRotated(90,0,1,0);
@@ -303,6 +341,8 @@ if (draw_object == DrawObject::Jerarquico) {
     glRotated(pinzas.getAngle(),0,0,1);
     pinza.applyScale();
     brazo.draw(draw_mode, r1, g1, b1, r2, g2, b2, grosor);
+    if (normales)
+        brazo.draw_normales();
 
   glPopMatrix();
 
@@ -311,9 +351,14 @@ else if (draw_object == DrawObject::Escena) {
     if (scene.empty())
         scene.initialize();
     scene.drawMe();
+    if (normales)
+      scene.drawNormales();
 }
-else
+else {
     toDraw->draw(draw_mode, r1, g1, b1, r2, g2, b2, grosor, tex1);
+    if (normales)
+        toDraw->draw_normales();
+}
 
 
 
@@ -326,7 +371,7 @@ else
 
 void draw_scene(void)
 {
-
+_triangulos3D::currentName = 1;
 clear_window();
 change_observer();
 draw_axis();
@@ -370,6 +415,7 @@ case '1': draw_object=DrawObject::Ply; toDraw = &ply; break;
 case '2': draw_object=DrawObject::Rota; toDraw = &rota; break;
 case '3': draw_object=DrawObject::Jerarquico; break;
 case '4': draw_object=DrawObject::Escena; break;
+case '5': draw_object=DrawObject::Escena5; break;
 }
 if (draw_object == DrawObject::Escena) switch(tolower(Tecla1)) {
     case 'a': scene.modifyBeta(1.0); break;
@@ -377,7 +423,7 @@ if (draw_object == DrawObject::Escena) switch(tolower(Tecla1)) {
     case 'x': scene.modifyAlpha(1.0); break;
     case 'c': scene.modifyAlpha(-1.0); break;
 }
-else switch(Tecla1) {
+else if (draw_object != DrawObject::Escena5) switch(Tecla1) {
     case 'p': draw_mode = DrawMode::Puntos; break;
     case 'l': draw_mode = DrawMode::Aristas; break;
     case 's': draw_mode = DrawMode::Solido; break;
@@ -399,6 +445,13 @@ if (draw_object == DrawObject::Jerarquico) switch(Tecla1) {
     case 'M': pinzas.faster(); break;
     case 'm': pinzas.slower(); break;
     }
+else if (draw_object == DrawObject::Escena5) switch(tolower(Tecla1)) {
+    case 'w': scene_p5.getCurrentCamera()->goForwardViewer();  break;
+    case 's': scene_p5.getCurrentCamera()->goBackwardViewer(); break;
+    case 'a': scene_p5.getCurrentCamera()->goLeftViewer();     break;
+    case 'd': scene_p5.getCurrentCamera()->goRightViewer();    break;
+    case 'r': scene_p5.getCurrentCamera()->resetViewer();      break;
+}
 
 glutPostRedisplay();
 
@@ -413,25 +466,37 @@ glutPostRedisplay();
 // posicion y del raton
 
 //***************************************************************************
-
+int pick(int x, int y);
 void special_keys(int Tecla1, int x,int y)
 {
 std::ignore = x = y;
-switch (Tecla1){
+if (draw_object != DrawObject::Escena5) switch (Tecla1){
 	case GLUT_KEY_LEFT:Observer_angle_y--;break;
 	case GLUT_KEY_RIGHT:Observer_angle_y++;break;
 	case GLUT_KEY_UP:Observer_angle_x--;break;
 	case GLUT_KEY_DOWN:Observer_angle_x++;break;
 	case GLUT_KEY_PAGE_UP:Observer_distance*=1.2;break;
 	case GLUT_KEY_PAGE_DOWN:Observer_distance/=1.2;break;
+    case GLUT_KEY_F5: normales = ! normales;
 }
+
     if (draw_object != DrawObject::Escena)
         switch(Tecla1) {
-        case GLUT_KEY_F1: draw_mode = DrawMode::Plana; break;
-        case GLUT_KEY_F2: draw_mode = DrawMode::Suave; break;
-        case GLUT_KEY_F3: draw_mode = DrawMode::PlanaTex; break;
-        case GLUT_KEY_F4: draw_mode = DrawMode::SuaveTex; break;
+        case GLUT_KEY_F6: draw_mode = DrawMode::Plana; break;
+        case GLUT_KEY_F7: draw_mode = DrawMode::Suave; break;
+        case GLUT_KEY_F8: draw_mode = DrawMode::PlanaTex; break;
+        case GLUT_KEY_F9: draw_mode = DrawMode::SuaveTex; break;
         }
+    if (draw_object == DrawObject::Escena5) {
+        switch(Tecla1) {
+            case GLUT_KEY_F1: scene_p5.changeCamera(0); break;
+            case GLUT_KEY_F2: scene_p5.changeCamera(1); break;
+            case GLUT_KEY_F3: scene_p5.changeCamera(2); break;
+        }
+        change_projection();
+        glFlush();
+    }
+
 
 glutPostRedisplay();
 }
@@ -462,6 +527,125 @@ void idle() {
         return;
     }
     glutPostRedisplay();
+}
+
+//***************************************************************************
+// Funciones de ratón de práctica 5
+//***************************************************************************
+enum class MouseStatus { FirstPerson, Other };
+MouseStatus currentMouseStatus = MouseStatus::Other;
+int previousX, previousY;
+
+constexpr GLsizei PickBufferSize = 1044;
+int analyzePickBuffer(GLint hits, const std::array<GLuint, PickBufferSize>& buffer) {
+
+    #ifdef DEBUG_IG_ON
+      std::cout << "Número de hits recibido: " << hits << '\n';
+    #endif
+    std::map<GLuint, GLuint> objetos;
+    auto it = buffer.begin();
+    for (auto i = 0; i < hits; ++i) {
+        auto nItems = *it; ++it;
+        auto zMin   = *it; ++it;
+        auto zMax   = *it; ++it;
+        #ifdef DEBUG_IG_ON
+          std::cout << "Número de items: " << nItems;
+          std::cout << "\t Z Mínima: " << zMin << "\t Z Máxima: " << zMax << '\n';
+          std::cout << "IDENTIFICADORES DE NOMBRE: ";
+        #endif
+
+        for (auto j = 0u; j < nItems; ++j) {
+            auto item = *it; ++it;
+            objetos.insert({zMin, item});
+            #ifdef DEBUG_IG_ON
+              std::cout << item << " ";
+            #endif  
+        }
+        #ifdef DEBUG_IG_ON
+            auto cuenta = std::count(_triangulos3D::selections.begin(), _triangulos3D::selections.end(), true);
+            std::cout << "Hay " << cuenta << " elementos seleccionados.\n";
+            std::cout << '\n';
+        #endif
+    }
+
+    if (hits == 0)
+        return -1;
+    else {
+        auto item = objetos.begin()->second;
+        _triangulos3D::selections[item] = !_triangulos3D::selections[item];
+        return item;
+    }
+}
+
+std::array<GLuint, PickBufferSize> pickBuffer;
+int pick(int x, int y) {
+  // 2 - Obtenemos los parámetros actuales del viewport
+  GLint viewport[4];
+  glGetIntegerv(GL_VIEWPORT, viewport);
+  // 3 - Ponemos OpenGL en modo selección
+  glRenderMode(GL_SELECT);
+
+  // 4 - Fijamos la matriz de proyección para la selección
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluPickMatrix(x, viewport[3] - y, 5.0, 5.0, viewport);
+  scene_p5.getCurrentCamera()->applyProjection();
+
+  // 5 - Dibujamos la escena con nombres
+  glInitNames();
+  glPushName(0);
+  draw_mode = DrawMode::Seleccion;
+  draw_scene();
+  _triangulos3D::adjustToFitSelections();
+
+  #ifdef DEBUG_IG_ON
+    std::cout << "El número de nombres usados es " << _triangulos3D::currentName << '\n';
+  #endif
+  draw_mode = DrawMode::ShowSeleccion;
+
+  glFlush();
+  // 6 - Ponemos OpenGL en modo render (Devuelve los hits obtenidos)
+  GLint hits = glRenderMode(GL_RENDER);
+
+
+  // 7 - Reestablecemos la transformación de proyección
+  change_projection();
+  // 8 - Analizamos el buffer de selección y devolvemos el resultado
+  return analyzePickBuffer(hits, pickBuffer);
+
+}
+
+void clickRaton(int boton, int estado, int x, int y)
+{
+  if (draw_object == DrawObject::Escena5)
+    if (boton == GLUT_LEFT_BUTTON) {
+        if (estado == GLUT_UP)
+            pick(x,y);
+        currentMouseStatus = MouseStatus::Other;
+        glutPostRedisplay();
+    }
+    if (boton == GLUT_RIGHT_BUTTON)
+        if (estado == GLUT_DOWN) {
+            previousX = x;
+            previousY = y;
+            currentMouseStatus = MouseStatus::FirstPerson;
+        }
+        else
+            currentMouseStatus = MouseStatus::Other;
+    else
+        currentMouseStatus = MouseStatus::Other;
+
+}
+
+void ratonMovido(int x, int y) {
+    if (draw_object == DrawObject::Escena5)
+    if (currentMouseStatus == MouseStatus::FirstPerson) {
+        scene_p5.getCurrentCamera()->turn(x - previousX, previousY - y);
+        previousX = x;
+        previousY = y;
+        glutPostRedisplay();
+    }
+
 }
 
 //***************************************************************************
@@ -527,7 +711,7 @@ glutInitWindowSize(UI_window_width,UI_window_height);
 
 // llamada para crear la ventana, indicando el titulo (no se visualiza hasta que se llama
 // al bucle de eventos)
-glutCreateWindow("Practica 4");
+glutCreateWindow("Practica 5");
 
 // asignación de la funcion llamada "dibujar" al evento de dibujo
 glutDisplayFunc(draw_scene);
@@ -545,13 +729,18 @@ pinzas.setSpeed(0.75);
 glutIdleFunc(idle);
 //***********************************
 ply.parametros(argv[1]);
-rota.read("lata-pcue.ply", 30, false, false);
+rota.parametros(perfil, 30, false, false);
 toDraw = nullptr;
 tex1 = new Texture("text-lata-1.jpg", true);
 // funcion de inicialización
 initialize();
 
+// asignación de funciones de control del ratón y buffer de selección (Práctica 5)
+glutMouseFunc( clickRaton );
+glutMotionFunc( ratonMovido );
+// 1 - Declaramos el buffer de selección
 
+glSelectBuffer(PickBufferSize, pickBuffer.data());
 // inicio del bucle de eventos
 glutMainLoop();
 return 0;

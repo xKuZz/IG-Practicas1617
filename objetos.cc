@@ -90,6 +90,8 @@ void _triangulos3D::draw_solido_ajedrez(float r1, float g1, float b1, float r2, 
 
 void _triangulos3D::draw(DrawMode mode, float r1, float g1, float b1, float r2, float g2, float b2, int grosor, Texture *tex)
 {
+    RGBColor firstColor(r1,g1,b1);
+    RGBColor secondColor(r2,g2,b2);
     switch (mode) {
     case DrawMode::Aristas:
         draw_aristas(r1,g1,b1,grosor);
@@ -117,6 +119,16 @@ void _triangulos3D::draw(DrawMode mode, float r1, float g1, float b1, float r2, 
         break;
     case DrawMode::SuaveTex:
         draw_iluminacion_suave_tex(tex);
+        break;
+    case DrawMode::Normales:
+        draw_normales();
+        break;
+
+    case DrawMode::Seleccion: // Práctica 5
+        draw_select();
+        break;
+    case DrawMode::ShowSeleccion:
+        draw_selected_color(firstColor, secondColor);
         break;
     default:
         cerr << "Tipo desconocido\n";
@@ -291,6 +303,34 @@ void _triangulos3D::draw_iluminacion_suave_tex(Texture* tex)
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+void _triangulos3D::draw_normales()
+{
+    if (normalesVertices.empty())
+        calcularNormalesVertices();
+    auto t = 0.1f;
+
+    RGBColor color(0,1,0);
+
+    color.applyColor();
+
+    glPointSize(1);
+    glBegin(GL_LINES);
+
+    for (auto i = 0u; i < vertices.size(); ++i) {
+        _vertex3f actual = vertices[i];
+        _vertex3f parametrico;
+
+        parametrico.x = actual.x + normalesVertices[i].x * t;
+        parametrico.y = actual.y + normalesVertices[i].y * t;
+        parametrico.z = actual.z + normalesVertices[i].z * t;
+
+        glVertex3fv((GLfloat*) &actual);
+        glVertex3fv((GLfloat*) &parametrico);
+    }
+
+    glEnd();
+}
+
 void _triangulos3D::inicializar_colores()
 {
         color.resize(caras.size());
@@ -364,6 +404,47 @@ array<float, 4> _triangulos3D::getPlanoT() const
     return planoT;
 }
 
+void _triangulos3D::draw_selected_color(const RGBColor &selected, const RGBColor &notSelected)
+{
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glBegin(GL_TRIANGLES);
+    for (unsigned i = 0; i < caras.size(); ++i, ++currentName) {
+        if (selections.empty() || !selections[currentName])
+            notSelected.applyColor();
+        else
+            selected.applyColor();
+
+        glVertex3fv((GLfloat*) &vertices[caras[i]._0]);
+        glVertex3fv((GLfloat*) &vertices[caras[i]._1]);
+        glVertex3fv((GLfloat*) &vertices[caras[i]._2]);
+    }
+    glEnd();
+}
+
+void _triangulos3D::draw_select()
+{
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    for (unsigned i = 0; i < caras.size(); ++i, ++currentName) {
+        glLoadName(currentName);
+        glBegin(GL_TRIANGLES);
+        glVertex3fv((GLfloat*) &vertices[caras[i]._0]);
+        glVertex3fv((GLfloat*) &vertices[caras[i]._1]);
+        glVertex3fv((GLfloat*) &vertices[caras[i]._2]);
+        glEnd();
+    }
+}
+
+
+
+void _triangulos3D::adjustToFitSelections()
+{
+    if (currentName != selections.size()) {
+        std::cout << "Reajustando vector de selección\n";
+        selections.clear();
+        selections.shrink_to_fit();
+        selections.resize(currentName, false);
+    }
+}
 
 _piramide::_piramide(float tam, float al)
 {
