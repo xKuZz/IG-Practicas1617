@@ -28,4 +28,14 @@ Hacer que para el sólido por revolución se pinte sólido de manera que las cop
 (uno para pares, otro para impares), todo la tapa superior tenga un único color diferente a los dos anteriores y 
 la tapa inferior tenga otro color que sea diferente al resto.
 
-#[Practica 3] (Branch Master)
+#Práctica 3
+Consiste en la creación de un objeto jerárquico articulado con al menos tres puntos de articulación y tres grados de libertad. Se nos permitió escoger qué deseábamos hacer.
+
+Examen: Cambiar una de las piezas del modelo jerárquico por un objeto PLY de todos los proporcionados y adaptarlo para que quede más o menos decente.
+
+#[Práctica 4](https://github.com/xKuZz/IG-Practicas1617/tree/practica4)
+Consiste en añadir iluminación, texturas, materiales, etc. para crear una escena. Examen: Pintar normales a los vértices a partir de sus ecuaciones en forma paramétrica. Nota: puesto que el profesor dejó entregarla después de Navidad, se propuso un segundo examen en el que se daba una única textura de un dado y tenía que aplicarse sobre un cubo para que se viese perfectamente bien.
+
+#[Práctica 5](https://github.com/xKuZz/IG-Practicas1617/tree/master)
+Consiste en añadir cámaras y movimiento de las mismas así como la posibilidad de seleccionar objetos de la escena. Examen: sólo bastaba con enseñar que funcionaba bien.
+
